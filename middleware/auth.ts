@@ -1,36 +1,64 @@
-// middleware/auth.ts
-import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp } from "#app";
+import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp, useCookie } from "#app";
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { $auth, $logout } = useNuxtApp();
+  const { $auth } = useNuxtApp();
   const sessionCookie = useCookie("firebase-session");
+  const isAuthenticated = useState('isAuthenticated', () => false);
 
+  // Server-side check (basic validation)
   if (process.server) {
     if (!sessionCookie.value) return navigateTo("/login");
-
-    // Verify session with backend
-    const valid = await $fetch("/api/auth/verify", {
-      headers: { Authorization: `Bearer ${sessionCookie.value}` },
-    });
-
-    if (!valid) {
-      await $logout(); // Ensure logout is triggered
-      return navigateTo("/login");
-    }
+    return; // Deeper validation happens on client side
   }
 
-  if (process.client) {
-    if (!$auth.currentUser) {
-      await $logout(); // Ensure session is cleared
-      return navigateTo("/login");
-    }
+  // Client-side handling
+  const { $logout } = useNuxtApp();
+  
+  // Wait for Firebase initialization
+  await new Promise((resolve) => {
+    const unsubscribe = $auth.onAuthStateChanged(async (user) => {
+      unsubscribe();
+      if (user) {
+        // Sync Firebase token with session cookie
+        try {
+          const token = await user.getIdToken();
+          sessionCookie.value = token;
+          isAuthenticated.value = true;
+        } catch (error) {
+          console.error("Token refresh failed:", error);
+          await handleLogout();
+        }
+      }
+      resolve(true);
+    });
+  });
 
-    try {
-      await $auth.currentUser.getIdToken(true); // Force token refresh
-    } catch (error) {
-      console.error("Token refresh failed:", error);
+  if (!isAuthenticated.value) {
+    return await handleLogout();
+  }
+
+  // Token maintenance system
+  const currentUser = $auth.currentUser;
+  if (currentUser) {
+    // Set up token refresh listener
+    currentUser.getIdTokenResult().then((tokenResult) => {
+      const refreshTime = new Date(tokenResult.expirationTime).getTime() - (5 * 60 * 1000); // Refresh 5 min before expiry
+      setTimeout(async () => {
+        try {
+          const freshToken = await currentUser.getIdToken(true);
+          sessionCookie.value = freshToken;
+        } catch (error) {
+          await handleLogout();
+        }
+      }, refreshTime - Date.now());
+    });
+  }
+
+  async function handleLogout() {
+    sessionCookie.value = null;
+    if (typeof $logout === "function") {
       await $logout();
-      return navigateTo("/login");
     }
+    return navigateTo("/login");
   }
 });

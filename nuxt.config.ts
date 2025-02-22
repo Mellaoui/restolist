@@ -20,4 +20,11 @@ export default defineNuxtConfig({
     firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY,
   },
+  build: {
+    transpile: [
+      "@pqina/pintura",
+      "@pqina/vue-pintura",
+      "@pqina/filepond-plugin-image-editor",
+    ],
+  },
 });

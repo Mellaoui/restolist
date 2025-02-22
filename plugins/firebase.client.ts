@@ -6,7 +6,9 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  setPersistence,
   type User,
+  browserLocalPersistence,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -15,9 +17,11 @@ import {
   getDocs,
   query,
   orderBy,
+  where,
 } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   if (process.server) {
     console.warn("⚠️ Skipping Firebase initialization on SSR.");
     return;
@@ -53,6 +57,12 @@ export default defineNuxtPlugin((nuxtApp) => {
   // ✅ Initialize Firestore
   const db = getFirestore(firebaseApp);
   console.log("✅ Firestore Initialized");
+
+  const storage = getStorage(firebaseApp);
+
+  await setPersistence(auth, browserLocalPersistence)
+    .then(() => console.log("✅ Firebase Auth Persistence Set to LOCAL"))
+    .catch((error) => console.error("❌ Error setting persistence:", error));
 
   // 🔥 Track Authentication State
   let currentUser: User | null = null;
@@ -90,9 +100,21 @@ export default defineNuxtPlugin((nuxtApp) => {
     });
   };
 
+  nuxtApp.provide("uploadFile", async (file: File, path: string) => {
+    try {
+      const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      return await getDownloadURL(snapshot.ref);
+    } catch (error) {
+      console.error("❌ File upload failed:", error);
+      throw error;
+    }
+  });
+
   // ✅ Provide Authentication State
   nuxtApp.provide("auth", auth);
   nuxtApp.provide("db", db);
+  nuxtApp.provide("storage", storage);
   nuxtApp.provide("currentUser", () => currentUser);
 
   // 🔑 Register a User
@@ -149,6 +171,62 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   });
 
+  const getStats = async () => {
+    try {
+      const db = getFirestore(); // ✅ Correct Firestore instance
+
+      // ✅ Get total number of restaurants
+      const totalRestaurantsSnapshot = await getDocs(
+        collection(db, "restaurants")
+      );
+      const totalRestaurants = totalRestaurantsSnapshot.size;
+
+      // ✅ Get new restaurants added in the last 30 days
+      const today = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(today.getDate() - 30);
+
+      const newRestaurantsQuery = query(
+        collection(db, "restaurants"),
+        where("createdAt", ">=", thirtyDaysAgo.toISOString())
+      );
+      const newRestaurantsSnapshot = await getDocs(newRestaurantsQuery);
+      const newRestaurants = newRestaurantsSnapshot.size;
+
+      // ✅ Get previous 30 days for trend analysis
+      const prevThirtyDaysAgo = new Date();
+      prevThirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const previousMonthQuery = query(
+        collection(db, "restaurants"),
+        where("createdAt", ">=", prevThirtyDaysAgo.toISOString()),
+        where("createdAt", "<", thirtyDaysAgo.toISOString())
+      );
+      const previousMonthSnapshot = await getDocs(previousMonthQuery);
+      const previousMonthRestaurants = previousMonthSnapshot.size;
+
+      // ✅ Calculate growth percentage
+      const growthRate =
+        previousMonthRestaurants > 0
+          ? (
+              ((newRestaurants - previousMonthRestaurants) /
+                previousMonthRestaurants) *
+              100
+            ).toFixed(2)
+          : "N/A";
+
+      return {
+        totalRestaurants,
+        newRestaurants,
+        growthRate,
+        previousMonthRestaurants,
+      };
+    } catch (error) {
+      console.error("❌ Error fetching stats:", error);
+      throw error;
+    }
+  };
+
   // 🔑 Add a Restaurant to Firestore
   nuxtApp.provide("addRestaurantToFirestore", async (restaurant: any) => {
     try {
@@ -193,4 +271,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       throw error;
     }
   });
+
+  nuxtApp.provide("getStats", getStats);
 });

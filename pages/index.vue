@@ -2,14 +2,13 @@
   <div class="bg-yellow-950">
     <main>
       <palettes
-  v-model:open="isSearchOpen"
-  :items="people"
-  :recentItems="recent"
-  title="Recently viewed"
-  placeholder="Find a contact..."
-  @select="handleUserSelection"
-/>
-
+        v-model:open="isSearchOpen"
+        :items="restaurants"
+        :recentItems="recentRestaurants"
+        title="Restaurants récemment consultés"
+        placeholder="Rechercher un restaurant..."
+        @select="handleRestaurantSelection"
+      />
 
       <Modal
         v-model="showDialog"
@@ -69,18 +68,20 @@
             <h1
               class="mt-10 text-pretty text-5xl font-semibold tracking-tight text-gray-100 sm:text-6xl"
             >
-            Explorez la gastronomie locale avec vos Youtubers préférés
+              Explorez la gastronomie locale avec vos Youtubers préférés
             </h1>
             <p
               class="mt-8 text-pretty text-lg font-medium text-gray-200 sm:text-xl/8"
             >
-            Découvrez les meilleures adresses et laissez-vous guider par des experts du goût.
+              Découvrez les meilleures adresses et laissez-vous guider par des
+              experts du goût.
             </p>
             <div class="mt-10 flex items-center gap-x-6">
               <button
-                @click="isSearchOpen  = true"
+                @click="isSearchOpen = true"
                 class="rounded-md bg-yellow-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-600"
-                >Commencer
+              >
+                Commencer
               </button>
               <a href="#" class="text-sm/6 font-semibold text-gray-200"
                 >Learn more <span aria-hidden="true">→</span></a
@@ -123,17 +124,16 @@
       <div class="mx-auto mt-32 max-w-7xl px-6 sm:mt-32 lg:px-8">
         <div class="mx-auto max-w-2xl lg:text-center">
           <h2 class="text-base/7 font-semibold text-yellow-400">
-            Deploy faster
+            Commencez Votre Voyage Culinaire
           </h2>
           <p
             class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-balance"
           >
-            Everything you need to deploy your app
+            Les meilleurs restaurants, regroupés en un seul endroit.
           </p>
           <p class="mt-6 text-lg/8 text-gray-300">
-            Quis tellus eget adipiscing convallis sit sit eget aliquet quis.
-            Suspendisse eget egestas a elementum pulvinar et feugiat blandit at.
-            In mi viverra elit nunc.
+            Explorez les restaurants par ville, lisez des avis et faites des
+            choix éclairés avec notre guide gastronomique.
           </p>
         </div>
         <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -179,17 +179,17 @@
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
           <div class="mx-auto max-w-2xl sm:text-center">
             <h2 class="text-base/7 font-semibold text-yellow-400">
-              Everything you need
+              Tout ce dont vous avez besoin en un seul endroit
             </h2>
             <p
               class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-white sm:text-balance sm:text-5xl"
             >
-              No server? No problem.
+              Découvrez les meilleurs restaurants pour une expérience culinaire
+              unique.
             </p>
             <p class="mt-6 text-lg/8 text-gray-300">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
-              impedit perferendis suscipit eaque, iste dolor cupiditate
-              blanditiis.
+              Recherchez des restaurants par ville, explorez les menus et
+              regardez des avis d'experts pour faire le meilleur choix.
             </p>
           </div>
         </div>
@@ -237,17 +237,16 @@
       <div class="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
         <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl">
           <h2 class="text-base/8 font-semibold text-yellow-400">
-            Our track record
+            Pourquoi Nous Choisir ?
           </h2>
           <p
-            class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-white sm:text-5xl"
+            class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-white sm:text-4xl"
           >
-            Trusted by thousands of creators&nbsp;worldwide
+            Recommandé par les passionnés de gastronomie à travers le pays
           </p>
           <p class="mt-6 text-lg/8 text-gray-300">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
-            impedit perferendis suscipit eaque, iste dolor cupiditate
-            blanditiis.
+            Découvrez les meilleurs restaurants, recommandés par des experts et
+            des clients.
           </p>
         </div>
         <dl
@@ -329,21 +328,23 @@
           <h2
             class="text-balance text-4xl font-semibold tracking-tight text-white sm:text-5xl"
           >
-            Boost your productivity. Start using our app today.
+            Découvrez les meilleurs restaurants autour de vous !
           </h2>
           <p class="mx-auto mt-6 max-w-xl text-lg/8 text-gray-300">
-            Incididunt sint fugiat pariatur cupidatat consectetur sit cillum
-            anim id veniam aliqua proident excepteur commodo do ea.
+            Trouvez des adresses recommandées par les meilleurs critiques
+            culinaires et YouTubeurs gastronomiques. Explorez, regardez les avis
+            et faites votre choix en toute confiance.
           </p>
           <div class="mt-10 flex items-center justify-center gap-x-6">
             <a
               href="#"
               class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >Get started</a
             >
-            <a href="#" class="text-sm/6 font-semibold text-white"
-              >Learn more <span aria-hidden="true">→</span></a
-            >
+              Explorer maintenant
+            </a>
+            <a href="#" class="text-sm/6 font-semibold text-white">
+              En savoir plus <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </div>
@@ -374,7 +375,7 @@
 </template>
 
 <script setup>
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, onMounted } from "vue";
 import {
   ArrowPathIcon,
   ChevronRightIcon,
@@ -392,6 +393,54 @@ import {
 } from "@heroicons/vue/24/outline";
 import palettes from "~/components/palettes.vue";
 import Modal from "~/components/Modal.vue";
+
+import { collection, getDocs } from "firebase/firestore";
+import { useNuxtApp } from "#app";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+// Inject Firestore instance
+const { $db } = useNuxtApp();
+
+// Reactive restaurant data
+const restaurants = ref([]);
+const recentRestaurants = ref([]); // Track recent selections
+
+const selectedRestaurant = ref(null);
+
+// Fetch restaurants from Firestore
+const fetchRestaurants = async () => {
+  try {
+    const querySnapshot = await getDocs(collection($db, "restaurants"));
+    restaurants.value = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Erreur lors de la récupération des restaurants:", error);
+  }
+};
+
+// Handle selection from modal
+const handleRestaurantSelection = (restaurant) => {
+  selectedRestaurant.value = restaurant;
+
+  // Add to recent selections if not already there
+  if (!recentRestaurants.value.find((r) => r.id === restaurant.id)) {
+    recentRestaurants.value.unshift(restaurant);
+  }
+
+  goToRestaurantDetails(restaurant.id);
+};
+
+// Navigate to restaurant details page
+const goToRestaurantDetails = (restaurantId) => {
+  router.push(`/details/${restaurantId}`);
+};
+
+// Fetch data when component mounts
+onMounted(fetchRestaurants);
 
 const { $signInWithGoogle, $auth } = useNuxtApp();
 const showDialog = ref(false);
@@ -427,8 +476,6 @@ const handleUserSelection = (selectedItem) => {
   console.log("User selected:", selectedItem);
 };
 
-
-
 const loginWithGoogle = async () => {
   try {
     const result = await $signInWithGoogle();
@@ -456,8 +503,7 @@ const primaryFeatures = [
   },
   {
     name: "Localisation intuitive",
-    description:
-      "Repérez les meilleures adresses autour de vous en un clic",
+    description: "Repérez les meilleures adresses autour de vous en un clic",
     href: "#",
     icon: CalendarDaysIcon,
   },
@@ -465,14 +511,12 @@ const primaryFeatures = [
 const secondaryFeatures = [
   {
     name: "Mises à jour continues.",
-    description:
-      "Des recommandations actualisées en temps réel.",
+    description: "Des recommandations actualisées en temps réel.",
     icon: CloudArrowUpIcon,
   },
   {
     name: "Sécurisé et fiable",
-    description:
-      "Naviguez en toute sécurité avec notre plateforme optimisée.",
+    description: "Naviguez en toute sécurité avec notre plateforme optimisée.",
     icon: LockClosedIcon,
   },
   {
@@ -482,24 +526,23 @@ const secondaryFeatures = [
     icon: ArrowPathIcon,
   },
   {
-  name: "Recommandations vérifiées",
-  description:
-    "Chaque lieu est testé et validé par nos experts et créateurs de contenu pour garantir la meilleure expérience.",
-  icon: FingerPrintIcon,
-},
-{
-  name: "Découvertes exclusives",
-  description:
-    "Accédez à des adresses secrètes et des bons plans partagés uniquement par les Youtubers partenaires.",
-  icon: Cog6ToothIcon,
-},
-{
-  name: "Favoris et historique",
-  description:
-    "Sauvegardez vos lieux préférés et retrouvez facilement les restaurants visités.",
-  icon: ServerIcon,
-},
-
+    name: "Recommandations vérifiées",
+    description:
+      "Chaque lieu est testé et validé par nos experts et créateurs de contenu pour garantir la meilleure expérience.",
+    icon: FingerPrintIcon,
+  },
+  {
+    name: "Découvertes exclusives",
+    description:
+      "Accédez à des adresses secrètes et des bons plans partagés uniquement par les Youtubers partenaires.",
+    icon: Cog6ToothIcon,
+  },
+  {
+    name: "Favoris et historique",
+    description:
+      "Sauvegardez vos lieux préférés et retrouvez facilement les restaurants visités.",
+    icon: ServerIcon,
+  },
 ];
 const stats = [
   { id: 1, name: "Créateurs partenaires", value: "500+ " },
@@ -573,20 +616,7 @@ const footerNavigation = {
           ]),
       }),
     },
-    {
-      name: "GitHub",
-      href: "#",
-      icon: defineComponent({
-        render: () =>
-          h("svg", { fill: "currentColor", viewBox: "0 0 24 24" }, [
-            h("path", {
-              "fill-rule": "evenodd",
-              d: "M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z",
-              "clip-rule": "evenodd",
-            }),
-          ]),
-      }),
-    },
+
     {
       name: "YouTube",
       href: "#",
