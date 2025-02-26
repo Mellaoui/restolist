@@ -25,6 +25,35 @@
               class="mt-6 text-lg/8 text-gray-300"
               v-html="restaurant.description"
             ></p>
+
+            <!-- ✅ Added YouTube Link Below Description -->
+            <div v-if="restaurant.youtube_link" class="mt-6">
+              <p class="text-lg font-semibold text-yellow-600">🎥 YouTube:</p>
+              <!-- <a
+                :href="restaurant.youtube_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-400 hover:underline"
+              >
+                {{ restaurant.youtube_link }}
+              </a> -->
+
+              <!-- Optional: Embed YouTube Video Instead of Link -->
+              <!-- Uncomment this part if you prefer to embed the video instead -->
+
+              <div class="mt-4">
+                <iframe
+                  :src="youtubeEmbedUrl"
+                  width="100%"
+                  height="315"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  class="rounded-lg shadow-md"
+                ></iframe>
+              </div>
+            </div>
+
             <dl
               class="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none"
             >
@@ -61,9 +90,9 @@
               <img
                 :src="restaurant.imageUrl || defaultImage"
                 :alt="restaurant.name"
-                width="2432"
-                height="1442"
-                class="-mb-12 w-[57rem] max-w-none rounded-tl-xl bg-gray-800 ring-1 ring-white/10"
+                width="400px"
+                height="300px"
+                class="-mb-12 w-[32rem] max-w-none rounded-tl-xl bg-gray-800 ring-1 ring-white/10"
               />
             </div>
             <div
@@ -78,15 +107,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { doc, getDoc } from "firebase/firestore";
 import { useNuxtApp } from "#app";
-import {
-  CloudArrowUpIcon,
-  LockClosedIcon,
-  ServerIcon,
-} from "@heroicons/vue/20/solid";
 
 // Get Firestore instance
 const { $db } = useNuxtApp();
@@ -119,6 +143,16 @@ const fetchRestaurantDetails = async () => {
     loading.value = false;
   }
 };
+
+// ✅ Compute the embeddable YouTube URL (for iframe embedding)
+const youtubeEmbedUrl = computed(() => {
+  if (!restaurant.value.youtube_link) return "";
+  const url = restaurant.value.youtube_link;
+  const videoIdMatch = url.match(
+    /(?:youtube\.com\/(?:.*v=|.*\/|.*embed\/|.*shorts\/)|youtu\.be\/)([^#&?]+)/
+  );
+  return videoIdMatch ? `https://www.youtube.com/embed/${videoIdMatch[1]}` : "";
+});
 
 // Fetch restaurant data on mount
 onMounted(fetchRestaurantDetails);

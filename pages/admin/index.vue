@@ -79,7 +79,7 @@
                       scope="col"
                       class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      E-mail
+                      youtube_link
                     </th>
                     <th
                       scope="col"
@@ -93,7 +93,11 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                  <tr v-for="restaurant in restaurants" :key="restaurant.id">
+                  <!-- Use paginatedRestaurants here instead of restaurants -->
+                  <tr
+                    v-for="restaurant in paginatedRestaurants"
+                    :key="restaurant.id"
+                  >
                     <td
                       class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                     >
@@ -107,7 +111,14 @@
                     <td
                       class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                     >
-                      {{ restaurant.email }}
+                      <a
+                        :href="restaurant.youtube_link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-blue-600 hover:underline"
+                      >
+                        {{ restaurant.youtube_link }}
+                      </a>
                     </td>
                     <td
                       class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
@@ -127,6 +138,32 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="flex items-center justify-center mt-4 space-x-2">
+              <!-- Previous Button -->
+              <button
+                @click="currentPage--"
+                :disabled="currentPage === 1"
+                class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Précédent
+              </button>
+
+              <!-- Page Indicator -->
+              <span class="text-sm text-gray-700">
+                Page {{ currentPage }} / {{ totalPages }}
+              </span>
+
+              <!-- Next Button -->
+              <button
+                @click="currentPage++"
+                :disabled="currentPage === totalPages"
+                class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Suivant
+              </button>
             </div>
           </div>
         </div>
@@ -172,16 +209,18 @@
                 />
               </div>
               <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700"
-                  >E-mail</label
-                >
+                <label class="block text-sm font-medium text-gray-700">
+                  Youtube_link
+                </label>
                 <input
-                  v-model="newRestaurant.email"
+                  v-model="newRestaurant.youtube_link"
                   required
-                  type="email"
+                  type="url"
                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-600 sm:text-sm/6"
+                  placeholder="https://www.youtube.com/watch?v=..."
                 />
               </div>
+
               <div class="mt-4">
                 <label class="block text-sm font-medium text-gray-700"
                   >Emplacement</label
@@ -238,7 +277,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { Dialog, DialogPanel, TransitionRoot } from "@headlessui/vue";
 import { useNuxtApp } from "#app";
 import {
@@ -266,7 +305,7 @@ const restaurants = ref([]);
 const newRestaurant = ref({
   name: "",
   cuisine: "",
-  email: "",
+  youtube_link: "",
   location: "",
   imageUrl: "",
 });
@@ -276,6 +315,22 @@ const notification = ref({
   title: "",
   message: "",
   type: "success",
+});
+
+// Pagination state
+const currentPage = ref(1);
+const pageSize = ref(5); // Number of rows per page
+
+// Computed: total number of pages
+const totalPages = computed(() => {
+  return Math.ceil(restaurants.value.length / pageSize.value);
+});
+
+// Computed: slice the restaurants to show only rows for the current page
+const paginatedRestaurants = computed(() => {
+  const startIndex = (currentPage.value - 1) * pageSize.value;
+  const endIndex = startIndex + pageSize.value;
+  return restaurants.value.slice(startIndex, endIndex);
 });
 const stats = ref([
   {
@@ -446,7 +501,7 @@ const addRestaurant = async () => {
     newRestaurant.value = {
       name: "",
       cuisine: "",
-      email: "",
+      youtube_link: "",
       location: "",
       imageUrl: "",
     };
