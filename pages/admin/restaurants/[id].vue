@@ -188,6 +188,13 @@
         >
           Enregistrer
         </button>
+        <button
+          type="button"
+          @click="deleteRestaurant"
+          class="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-semibold shadow hover:bg-red-500 transition"
+        >
+          Supprimer
+        </button>
       </div>
     </form>
   </div>
@@ -196,7 +203,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import {
   ref as storageRef,
   uploadBytes,
@@ -298,6 +305,31 @@ const updateRestaurant = async () => {
     showNotification(
       "Erreur",
       "Échec de la mise à jour du restaurant.",
+      "error"
+    );
+  }
+};
+
+const deleteRestaurant = async () => {
+  const confirmDelete = confirm(
+    "Êtes-vous sûr de vouloir supprimer ce restaurant ?"
+  );
+  if (!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc($db, "restaurants", route.params.id));
+    showNotification(
+      "Succès",
+      "Le restaurant a été supprimé avec succès.",
+      "success"
+    );
+    setTimeout(() => {
+      router.push("/admin"); // Redirect after deletion
+    }, 2000);
+  } catch (err) {
+    showNotification(
+      "Erreur",
+      "Échec de la suppression du restaurant.",
       "error"
     );
   }
